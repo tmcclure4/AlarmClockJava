@@ -6,10 +6,10 @@ import java.awt.event.*;
 
 public class AlarmGUI {
 	//set arrays for the combo box
-	String[] hour = {"1","2","3","4","5","6","7","8","9","10","11","12"};
-	String[] tenths = {"0","1","2","3","4","5"};
-	String[] minutes = {"0","1","2","3","4","5","6","7","8","9"};
-	String[] AMorPM = {"AM", "PM"};
+	private String[] hour = {"1","2","3","4","5","6","7","8","9","10","11","12"};
+	private String[] tenths = {"0","1","2","3","4","5"};
+	private String[] minutes = {"0","1","2","3","4","5","6","7","8","9"};
+	private String[] AMorPM = {"AM", "PM"};
 
 	JComboBox comboBoxHour = new JComboBox(hour);
 	JComboBox comboBoxTenths = new JComboBox(tenths);
@@ -41,6 +41,7 @@ public class AlarmGUI {
 		panel.add(comboBoxHour);
 		panel.add(comboBoxTenths);
 		panel.add(comboBoxMinutes);
+		panel.add(comboBoxAMorPM);
 		panel.add(button);
 		panel.add(label);
 		
@@ -50,8 +51,15 @@ public class AlarmGUI {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				
 				String tempHour=comboBoxHour.getSelectedItem().toString();
-				label.setText(tempHour);
+				String tempTenth=comboBoxTenths.getSelectedItem().toString();
+				String tempMinute=comboBoxMinutes.getSelectedItem().toString();
+				String tempAMorPM=comboBoxAMorPM.getSelectedItem().toString();
+				
+				AlarmInformation tempAlarm=new AlarmInformation(tempHour, tempTenth, tempMinute, tempAMorPM);
+				tempAlarm.PrintAlarmInfo(label);
+				
 				
 			}
 		});
