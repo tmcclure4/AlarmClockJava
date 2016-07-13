@@ -6,10 +6,11 @@ import java.awt.event.*;
 import javax.swing.border.*;
 
 
-// 2 problems down below look for them
 //how to set the background to a certain color
+//look at the border issue
 public class AlarmGUI extends JFrame{
 	
+	private HistoryGUI historyGui;
 	private JPanel mainPanel = new JPanel();
 	
 	//set up the north JPanel/name box
@@ -44,7 +45,7 @@ public class AlarmGUI extends JFrame{
 	private JLabel labelCheckBox = new JLabel("Repeat the Alarm:");
 	
 	//create south JPanel and the buttons associated with it
-	private JPanel southFrame = new JPanel();
+	private JPanel southPanel = new JPanel();
 	private JButton submitButton = new JButton("Submit");
 	private JButton historyButton = new JButton("Review Alarms");
 	
@@ -56,7 +57,16 @@ public class AlarmGUI extends JFrame{
 	//constructor
 	public AlarmGUI(){
 		super("Alarm Clock");//put text on the top of the gui
-		frame();
+		frame();//start the gui
+	}
+
+	/**
+	 * Set the historyGui object to the one created by main so the two gui's
+	 * will be synchronized
+	 * @param tempHistGui-the HistoryGUI created by main
+	 */
+	public void setHistoryGui(HistoryGUI tempHistGui){
+		historyGui=tempHistGui;
 	}
 
 	
@@ -74,7 +84,7 @@ public class AlarmGUI extends JFrame{
 		setContentPane(mainPanel);
 		
 		//set up the north panel
-		northPanel.setBorder(borderRegion);
+		//northPanel.setBorder(borderRegion);
 		northPanel.setPreferredSize(new Dimension(350,30));
 		northPanel.add(nameLabel);
 		northPanel.add(alarmName);
@@ -92,10 +102,11 @@ public class AlarmGUI extends JFrame{
 		
 		
 		//set the west JPanel/when the alarm wants to go off
-		westPanel.setBorder(borderRegion);
-		westPanel.setPreferredSize(new Dimension(150,300));
+		//westPanel.setBorder(borderRegion);
+		westPanel.setPreferredSize(new Dimension(150,275));
 		westPanel.add(labelCheckBox);
 		westPanel.add(repeatNever);
+		westPanel.add(everyday);
 		westPanel.add(sunday);
 		westPanel.add(monday);
 		westPanel.add(tuesday);
@@ -103,33 +114,25 @@ public class AlarmGUI extends JFrame{
 		westPanel.add(thursday);
 		westPanel.add(friday);
 		westPanel.add(saturday);
-		westPanel.add(everyday);
 		mainPanel.add(westPanel, BorderLayout.WEST);
 		repeatNever.setSelected(true);//never is default for check box
 		
 		//set the south JPanel/buttons
-		southFrame.setBorder(borderRegion);
-		southFrame.setPreferredSize(new Dimension(350,50));
-		southFrame.add(submitButton);
-		southFrame.add(historyButton);
-		mainPanel.add(southFrame, BorderLayout.SOUTH);
+		//southPanel.setBorder(borderRegion);
+		southPanel.setPreferredSize(new Dimension(350,50));
+		southPanel.add(submitButton);
+		southPanel.add(historyButton);
+		mainPanel.add(southPanel, BorderLayout.SOUTH);
 		
-		/*
-		JPanel eastPanel=new JPanel();
-		eastPanel.setBorder(borderRegion);
-		eastPanel.setPreferredSize(new Dimension(100,300));
-		JLabel lblEast=new JLabel("East");
-		eastPanel.add(lblEast);
-		mainPanel.add(eastPanel, BorderLayout.EAST);
-		*/
 		
-		pack();
+		pack();//pack the panels together
 		setVisible(true);
-		//mainPanel.setOpaque(true);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	
 		
-		/**
-		 * This is the start of the list of action listeners for all buttons and combo box's
-		 */
+		/*************************************************************************************
+		  This is the start of the list of action listeners for all buttons and combo box's
+		*************************************************************************************/
 		
 		/**
 		 * This action listener deals with the "Submit" button. When submit is pushed, the alarm will be stored
@@ -148,12 +151,11 @@ public class AlarmGUI extends JFrame{
 				
 				//AlarmInformation tempAlarm=new AlarmInformation(tempHour, tempTenth, tempMinute, tempAMorPM);
 				//tempAlarm.PrintAlarmInfo(label);
-				labelCheckBox.setText(alarmTime);
+				labelCheckBox.setText(readCheckBox());
 			}
 		});
 		
 		
-		//todo DO THISS********************************************************************************************************************
 		/**
 		 * This action listener deals with the "Review Alarm" button. When this button is pushed, a screen
 		 * will pop up showing the current alarms set.
@@ -162,8 +164,8 @@ public class AlarmGUI extends JFrame{
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
-				
+				setVisible(false);
+				historyGui.callHistoryGui();
 			}
 		});		
 		
@@ -171,6 +173,8 @@ public class AlarmGUI extends JFrame{
 		 * This action listener deals with the "Never" check box.
 		 * When the "Never" check box is pushed, it will erase all the other check box's
 		 * so the "Never" check box is the only selected from the list.
+		 * It will not let the user unselect "Never" check box. The only way for "Never" to be 
+		 * unselected is when another check box is pushed.
 		 */
 		repeatNever.addActionListener(new ActionListener() {
 			
@@ -197,7 +201,7 @@ public class AlarmGUI extends JFrame{
 		/**
 		 * Sunday
 		 * If a check box is selected that isn't "Never" or "Everyday and "Never" or "Everyday" is selected, then set 
-		 * "Never" to false. If the only check box that is selected is clicked to turn off, leave it on since there must always
+		 * "Never" and "Everyday" to false. If the only check box that is selected is clicked to turn off, leave it on since there must always
 		 * be one check box selected.
 		 */
 		sunday.addActionListener(new ActionListener() {
@@ -217,7 +221,7 @@ public class AlarmGUI extends JFrame{
 		/**
 		 * Monday
 		 * If a check box is selected that isn't "Never" or "Everyday and "Never" or "Everyday" is selected, then set 
-		 * "Never" to false. If the only check box that is selected is clicked to turn off, leave it on since there must always
+		 * "Never" and "Everyday" to false. If the only check box that is selected is clicked to turn off, leave it on since there must always
 		 * be one check box selected.
 		 */
 		monday.addActionListener(new ActionListener() {
@@ -237,7 +241,7 @@ public class AlarmGUI extends JFrame{
 		/**
 		 * Tuesday
 		 * If a check box is selected that isn't "Never" or "Everyday and "Never" or "Everyday" is selected, then set 
-		 * "Never" to false. If the only check box that is selected is clicked to turn off, leave it on since there must always
+		 * "Never" and "Everyday" to false. If the only check box that is selected is clicked to turn off, leave it on since there must always
 		 * be one check box selected.
 		 */
 		tuesday.addActionListener(new ActionListener() {
@@ -257,7 +261,7 @@ public class AlarmGUI extends JFrame{
 		/**
 		 * Wednesday
 		 * If a check box is selected that isn't "Never" or "Everyday and "Never" or "Everyday" is selected, then set 
-		 * "Never" to false. If the only check box that is selected is clicked to turn off, leave it on since there must always
+		 * "Never" and "Everyday" to false. If the only check box that is selected is clicked to turn off, leave it on since there must always
 		 * be one check box selected.
 		 */
 		wednesday.addActionListener(new ActionListener() {
@@ -277,7 +281,7 @@ public class AlarmGUI extends JFrame{
 		/**
 		 * Thursday
 		 * If a check box is selected that isn't "Never" or "Everyday and "Never" or "Everyday" is selected, then set 
-		 * "Never" to false. If the only check box that is selected is clicked to turn off, leave it on since there must always
+		 * "Never" and "Everyday" to false. If the only check box that is selected is clicked to turn off, leave it on since there must always
 		 * be one check box selected.
 		 */
 		thursday.addActionListener(new ActionListener() {
@@ -297,7 +301,7 @@ public class AlarmGUI extends JFrame{
 		/**
 		 * Friday
 		 * If a check box is selected that isn't "Never" or "Everyday and "Never" or "Everyday" is selected, then set 
-		 * "Never" to false. If the only check box that is selected is clicked to turn off, leave it on since there must always
+		 * "Never" and "Everyday" to false. If the only check box that is selected is clicked to turn off, leave it on since there must always
 		 * be one check box selected.
 		 */
 		friday.addActionListener(new ActionListener() {
@@ -317,7 +321,7 @@ public class AlarmGUI extends JFrame{
 		/**
 		 * Saturday
 		 * If a check box is selected that isn't "Never" or "Everyday and "Never" or "Everyday" is selected, then set 
-		 * "Never" to false. If the only check box that is selected is clicked to turn off, leave it on since there must always
+		 * "Never" and "Everyday" to false. If the only check box that is selected is clicked to turn off, leave it on since there must always
 		 * be one check box selected.
 		 */
 		saturday.addActionListener(new ActionListener() {
@@ -366,7 +370,8 @@ public class AlarmGUI extends JFrame{
 	/**
 	 * This function sees if any of the check box's are selected other than a certain check box.
 	 * @return true if one check box is selected other than the selected check box. Otherwise false is returned 
-	 * (More than one check box selected) whichDay- Is the check box that was just selected.
+	 * (More than one check box selected) 
+	 * whichDay- The check box that was just selected.
 	 * 0="Never", 1="Sunday", 2="Monday", 3="Tuesday", 4="Wednesday",
 	 * 5="Thursday", 6="Friday", 7="Saturday", 8="Everyday"
 	 */
@@ -425,11 +430,6 @@ public class AlarmGUI extends JFrame{
 	}
 	
 	
-	//todo do i need this????!?!?!???!!?!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
-	private void setFonts(){
-		UIManager.put("Label.font", fontLabels);
-	}
-	
 	/**
 	 * This function gets the values from the combo boxes and combines them into one string.
 	 * @returns the combined string which corresponds to the alarm time.
@@ -441,11 +441,51 @@ public class AlarmGUI extends JFrame{
 		String tempAMorPM=comboBoxAMorPM.getSelectedItem().toString();
 		return (tempHour + ":" + tempTenth + tempMinute + " " + tempAMorPM);
 	}
+
 	
 	/**
-	 * This function figures out which 
+	 * This function combines the value from the check box's into one string.
+	 * @return The combined combo box values into a single string.
+	 *
+	 * This function see's if the check box is selected. If it is selected it adds
+	 * the abbreviation to the string, else nothing will be added to the string.
 	 */
-
+	public String readCheckBox(){
+		String tempString="";
+		
+		//"Repeat Never" and "Everyday" will be the only one's selected if they return true
+		if(repeatNever.isSelected()){
+			tempString = "N";
+		}
+		else if(everyday.isSelected()){
+			tempString = "E";
+		}
+		else{
+			if(sunday.isSelected()){
+				tempString+="Su ";
+			}
+			if(monday.isSelected()){
+				tempString+="M ";
+			}
+			if(tuesday.isSelected()){
+				tempString+="Tu ";
+			}
+			if(wednesday.isSelected()){
+				tempString+="W ";
+			}
+			if(thursday.isSelected()){
+				tempString+="Th ";
+			}
+			if(friday.isSelected()){
+				tempString+= "F ";
+			}
+			if(saturday.isSelected()){
+				tempString+= "Sa";
+			}
+		}
+		
+		return tempString;
+	}
 }
 
 /**
