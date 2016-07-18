@@ -3,6 +3,8 @@ package alarmClock;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+
 import javax.swing.border.*;
 
 
@@ -10,7 +12,10 @@ import javax.swing.border.*;
 //look at the border issue
 public class AlarmGUI extends JFrame{
 	
-	private HistoryGUI historyGui;
+	//stores the list of alarms
+	private ArrayList<AlarmClock> alarmList;// = new ArrayList<AlarmClock>();
+		
+	//private HistoryGUI historyGui;
 	private JPanel mainPanel = new JPanel();
 	
 	//set up the north JPanel/name box
@@ -55,8 +60,9 @@ public class AlarmGUI extends JFrame{
 	private Font fontLabels = new Font(Font.DIALOG,Font.BOLD,16);
 	
 	//constructor
-	public AlarmGUI(){
+	public AlarmGUI(ArrayList<AlarmClock> tempAlarmList){
 		super("Alarm Clock");//put text on the top of the gui
+		alarmList = tempAlarmList;
 		frame();//start the gui
 	}
 
@@ -65,9 +71,9 @@ public class AlarmGUI extends JFrame{
 	 * will be synchronized
 	 * @param tempHistGui-the HistoryGUI created by main
 	 */
-	public void setHistoryGui(HistoryGUI tempHistGui){
+	/*public void setHistoryGui(HistoryGUI tempHistGui){
 		historyGui=tempHistGui;
-	}
+	}*/
 
 	
 	
@@ -143,15 +149,15 @@ public class AlarmGUI extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				
 				//get the time the alarm will go off into a string
-				String alarmTime = readComboBox();
-				
+				AlarmClock newAlarmClock = new AlarmClock(alarmName.getText(),readCheckBox(),readComboBox(),alarmList);
+				setVisible(false);
+				new AlarmGUI(alarmList);
 				//get the value's from the combo boxes into a string
 				
 				//AlarmInformation tempAlarm=new AlarmInformation(tempHour, tempTenth, tempMinute, tempAMorPM);
 				//tempAlarm.PrintAlarmInfo(label);
-				labelCheckBox.setText(readCheckBox());
+				//labelCheckBox.setText(readCheckBox());
 			}
 		});
 		
@@ -164,8 +170,9 @@ public class AlarmGUI extends JFrame{
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				new HistoryGUI(alarmList);
 				setVisible(false);
-				historyGui.callHistoryGui();
+				//historyGui.callHistoryGui();
 			}
 		});		
 		
@@ -432,7 +439,7 @@ public class AlarmGUI extends JFrame{
 	
 	/**
 	 * This function gets the values from the combo boxes and combines them into one string.
-	 * @returns the combined string which corresponds to the alarm time.
+	 * @returns the combined string which corresponds to the alarm time. (hh:mm AM/PM)
 	 */
 	public String readComboBox(){
 		String tempHour=comboBoxHour.getSelectedItem().toString();
