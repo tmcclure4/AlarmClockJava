@@ -54,16 +54,16 @@ public class AlarmGUI extends JFrame{
 	private JButton submitButton = new JButton("Submit");
 	private JButton historyButton = new JButton("Review Alarms");
 	
-	private Border borderContents = BorderFactory.createEmptyBorder(10,10,10,10);
+	/*private Border borderContents = BorderFactory.createEmptyBorder(10,10,10,10);
 	private Border borderRegion = BorderFactory.createLineBorder(Color.RED,1);
 	private Color colorContents = Color.WHITE;
 	private Font fontLabels = new Font(Font.DIALOG,Font.BOLD,16);
-	
+	*/
 	//constructor
-	public AlarmGUI(ArrayList<AlarmClock> tempAlarmList){
+	public AlarmGUI(ArrayList<AlarmClock> tempAlarmList, Boolean tooManyAlarms, Boolean tooSmallName){
 		super("Alarm Clock");//put text on the top of the gui
 		alarmList = tempAlarmList;
-		frame();//start the gui
+		frame(tooManyAlarms, tooSmallName);//start the gui
 	}
 
 	/**
@@ -81,7 +81,7 @@ public class AlarmGUI extends JFrame{
 	/**
 	 * This function initializes the frame to be used.
 	 */
-	public void frame(){
+	public void frame(Boolean tooManyAlarms, Boolean tooSmallName){
 		
 		//add the main panel
 		mainPanel.setLayout(new BorderLayout());
@@ -91,7 +91,7 @@ public class AlarmGUI extends JFrame{
 		
 		//set up the north panel
 		//northPanel.setBorder(borderRegion);
-		northPanel.setPreferredSize(new Dimension(350,30));
+		northPanel.setPreferredSize(new Dimension(400,30));//350,30
 		northPanel.add(nameLabel);
 		northPanel.add(alarmName);
 		alarmName.setColumns(19);//set length of text field 
@@ -99,6 +99,7 @@ public class AlarmGUI extends JFrame{
 		
 		
 		//middle frame/select the time
+		middlePanel.setPreferredSize(new Dimension(250,275));
 		middlePanel.add(comboBoxHour);
 		middlePanel.add(colonLabel);
 		middlePanel.add(comboBoxTenths);
@@ -125,11 +126,21 @@ public class AlarmGUI extends JFrame{
 		
 		//set the south JPanel/buttons
 		//southPanel.setBorder(borderRegion);
-		southPanel.setPreferredSize(new Dimension(350,50));
+		southPanel.setPreferredSize(new Dimension(400,50));//350,50
 		southPanel.add(submitButton);
 		southPanel.add(historyButton);
 		mainPanel.add(southPanel, BorderLayout.SOUTH);
 		
+		if(tooManyAlarms){
+			JLabel tooManyAlarmsLabel = new JLabel("Error. Limit of 15 alarms has been reached.");
+			tooManyAlarmsLabel.setForeground(Color.RED);
+			middlePanel.add(tooManyAlarmsLabel);
+		}
+		if(tooSmallName){
+			JLabel tooSmallNameLabel = new JLabel("Error. Name must be at least 3 characters.");
+			tooSmallNameLabel.setForeground(Color.RED);
+			middlePanel.add(tooSmallNameLabel);
+		}
 		
 		pack();//pack the panels together
 		setVisible(true);
@@ -143,16 +154,28 @@ public class AlarmGUI extends JFrame{
 		/**
 		 * This action listener deals with the "Submit" button. When submit is pushed, the alarm will be stored
 		 * and go off when the selected time is reached.
+		 * 15 is the max number of alarms to be stored at once
 		 */
 		submitButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				//get the time the alarm will go off into a string
-				AlarmClock newAlarmClock = new AlarmClock(alarmName.getText(),readCheckBox(),readComboBox(),alarmList);
-				setVisible(false);
-				new AlarmGUI(alarmList);
+				//get the time the alarm will go off into a string, 15 is the max number of alarms
+				if(alarmList.size()==15){
+					setVisible(false);
+					new AlarmGUI(alarmList,true,false);
+				}
+				else if(alarmName.getText().length()<4){//name cannot be less than 4
+					setVisible(false);
+					new AlarmGUI(alarmList,false,true);
+				}
+				else{
+					new AlarmClock(alarmName.getText(),readCheckBox(),readComboBox(),alarmList);
+					setVisible(false);
+					new AlarmGUI(alarmList, false,false);
+				}
+				
 				//get the value's from the combo boxes into a string
 				
 				//AlarmInformation tempAlarm=new AlarmInformation(tempHour, tempTenth, tempMinute, tempAMorPM);
@@ -222,6 +245,9 @@ public class AlarmGUI extends JFrame{
 				if(!isComboBoxClicked(1)){//if sunday is the only combo box clicked, leave it clicked
 					sunday.setSelected(true);
 				}
+				if(allCheckBoxesClicked()){
+					clearCheckBoxesSetEveryday();
+				}
 			}
 		});
 		
@@ -242,7 +268,11 @@ public class AlarmGUI extends JFrame{
 				if(!isComboBoxClicked(2)){//if monday is the only combo box clicked, leave it clicked
 					monday.setSelected(true);
 				}
+				if(allCheckBoxesClicked()){
+					clearCheckBoxesSetEveryday();
+				}
 			}
+			
 		});
 		
 		/**
@@ -261,6 +291,9 @@ public class AlarmGUI extends JFrame{
 				}
 				if(!isComboBoxClicked(3)){//if tuesday is the only combo box clicked, leave it clicked
 					tuesday.setSelected(true);
+				}
+				if(allCheckBoxesClicked()){
+					clearCheckBoxesSetEveryday();
 				}
 			}
 		});
@@ -282,6 +315,9 @@ public class AlarmGUI extends JFrame{
 				if(!isComboBoxClicked(4)){//if wednesday is the only combo box clicked, leave it clicked
 					wednesday.setSelected(true);
 				}
+				if(allCheckBoxesClicked()){
+					clearCheckBoxesSetEveryday();
+				}
 			}
 		});
 		
@@ -301,6 +337,9 @@ public class AlarmGUI extends JFrame{
 				}
 				if(!isComboBoxClicked(5)){//if thursday is the only combo box clicked, leave it clicked
 					thursday.setSelected(true);
+				}
+				if(allCheckBoxesClicked()){
+					clearCheckBoxesSetEveryday();
 				}
 			}
 		});
@@ -322,6 +361,10 @@ public class AlarmGUI extends JFrame{
 				if(!isComboBoxClicked(6)){//if friday is the only combo box clicked, leave it clicked
 					friday.setSelected(true);
 				}
+				if(allCheckBoxesClicked()){
+					clearCheckBoxesSetEveryday();
+				}
+				
 			}
 		});
 		
@@ -341,6 +384,9 @@ public class AlarmGUI extends JFrame{
 				}
 				if(!isComboBoxClicked(7)){//if saturday is the only combo box clicked, leave it clicked
 					saturday.setSelected(true);
+				}
+				if(allCheckBoxesClicked()){
+					clearCheckBoxesSetEveryday();
 				}
 			}
 		});
@@ -493,55 +539,33 @@ public class AlarmGUI extends JFrame{
 		
 		return tempString;
 	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean allCheckBoxesClicked(){
+		if(sunday.isSelected()&&monday.isSelected()&&tuesday.isSelected()&&wednesday.isSelected()&&
+				thursday.isSelected()&&friday.isSelected()&&saturday.isSelected()){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+	/**
+	 * This clears all the check boxes. This is used when all of the checkboxes are selected, it 
+	 * sets the everyday check box.
+	 */
+	public void clearCheckBoxesSetEveryday(){
+		sunday.setSelected(false);
+		monday.setSelected(false);
+		tuesday.setSelected(false);
+		wednesday.setSelected(false);
+		thursday.setSelected(false);
+		friday.setSelected(false);
+		saturday.setSelected(false);
+		everyday.setSelected(true);
+	}
 }
 
-/**
- * public void frame(){
-		//add a frame
-		JFrame frame = new JFrame();
-		frame.setVisible(true);
-		frame.setSize(500,500);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		JPanel panel = new JPanel();
-		
-		panel.setLayout(new GridLayout(4,10,20,20));
-		
-		panel.add(label2);
-		panel.add(alarmName);
-		//add combo box, button, and label to Panel
-		panel.add(comboBoxHour);
-		panel.add(comboBoxTenths);
-		panel.add(comboBoxMinutes);
-		panel.add(comboBoxAMorPM);
-		panel.add(button);
-		panel.add(label);
-		
-		panel.add(sunday);
-		panel.add(monday);
-		panel.add(tuesday);
-		panel.add(wednesday);
-		panel.add(thursday);
-		panel.add(friday);
-		panel.add(saturday);
-		
-		frame.add(panel);//add JPanel to the JFrame	
-		
-		button.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				
-				String tempHour=comboBoxHour.getSelectedItem().toString();
-				String tempTenth=comboBoxTenths.getSelectedItem().toString();
-				String tempMinute=comboBoxMinutes.getSelectedItem().toString();
-				String tempAMorPM=comboBoxAMorPM.getSelectedItem().toString();
-				boolean tempThing=sunday.isSelected();
-				//AlarmInformation tempAlarm=new AlarmInformation(tempHour, tempTenth, tempMinute, tempAMorPM);
-				//tempAlarm.PrintAlarmInfo(label);
-				//label.setText(String.valueOf(tempThing));
-				label.setText(alarmName.getText());
-			}
-		});
-	}
-*/

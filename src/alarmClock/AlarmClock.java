@@ -8,7 +8,6 @@ public class AlarmClock {
 	private String alarmName;
 	private String dayAlarmGoesOff;
 	private String alarmTime;
-	//private int alarmNumber;//stores the number of the alarm(i.e. 1,2,3...)
 	private boolean alarmActive = true;
 	private String fullAlarmInfo;
 	private int militaryTime;
@@ -100,6 +99,11 @@ public class AlarmClock {
 		return tempMilitaryTime;
 	}
 	
+	
+	public String getTimeDate(){
+		return alarmTime + " " + dayAlarmGoesOff;
+	}
+	
 	/**
 	 * This returns the alarm name
 	 * @return
@@ -123,12 +127,7 @@ public class AlarmClock {
 		return alarmTime;
 	}
 	
-	/**
-	 * This returns the alarm number
-	 
-	public int getAlarmNumber(){
-		return alarmNumber;
-	}*/
+	
 
 	/**
 	 * This returns whether the alarm is active or not
@@ -150,4 +149,13 @@ public class AlarmClock {
 	public int getMilitaryTime(){
 		return militaryTime;
 	}
+	
+	/**
+	 * This sets the variable whether the alarm is active or not
+	 */
+	public void setActiveOrNot(Boolean tempActive){
+		alarmActive=tempActive;
+	}
+
 }
+
