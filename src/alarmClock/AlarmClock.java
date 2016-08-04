@@ -11,28 +11,101 @@ public class AlarmClock {
 	private boolean alarmActive = true;
 	private String fullAlarmInfo;
 	private int militaryTime;
+	private String urlAlarm;
+	private boolean deleteAlarm=false;
 	
 	//stores the list of alarms
-	private ArrayList<AlarmClock> alarmList;// = new ArrayList<AlarmClock>();
+	private static ArrayList<AlarmClock> alarmListStorage;// = new ArrayList<AlarmClock>();
+	private static ArrayList<AlarmClock> mainAlarmList;
 	
 	//constructor 
-	public AlarmClock(String tempAlarmName, String alarmDate, String tempTime, ArrayList<AlarmClock> tempArrayList){
+	public AlarmClock(String tempAlarmName, String alarmDate, String tempTime, String tempURL, 
+			ArrayList<AlarmClock> tempArrayList, ArrayList<AlarmClock> tempMainList){
 		alarmName=tempAlarmName;
 		dayAlarmGoesOff=alarmDate;
 		alarmTime=tempTime;
-		//alarmNumber=tempAlarmNumber;
 		fullAlarmInfo=tempAlarmName+" " +tempTime+ " "+alarmDate;
 		militaryTime = convertToMilitaryTime(tempTime);
-		alarmList=tempArrayList;
-		sortAlarm();
+		alarmListStorage=tempArrayList;
+		mainAlarmList=tempMainList;
+		urlAlarm=tempURL;
+		alarmListStorage.add(this);
+		//sortAlarm();
 	}
-	
 	
 	/**
 	 * This is the storing algorithm that stores the clocks in order of earliest to latest.
 	 * If an alarm has the same time, the alarm with the least days will be shown first
 	 */
-	public void sortAlarm(){
+	/*public static void sortAlarm(){
+		
+		//for(AlarmClock tempAlarmListStorage:alarmListStorage){
+		for(Iterator<AlarmClock> it=alarmListStorage.iterator();it.hasNext();){
+			AlarmClock tempAlarmListStorage = it.next();
+			//if the size is 0, then add the alarm clock
+			if(mainAlarmList.size()==0){
+				mainAlarmList.add(tempAlarmListStorage);
+			}
+			else{//there is at least one item in the alarm list
+				int alarmListCounter=0;
+				//for(AlarmClock tempAlarmClock:mainAlarmList){
+				for(Iterator<AlarmClock> it2=mainAlarmList.iterator();it2.hasNext();){	
+					AlarmClock tempAlarmClock = it2.next();
+					//if the current military time is LESS THAN the time in the arraylist, then put this time in 
+					//front of the military time in arraylist
+					 if(tempAlarmClock.getMilitaryTime()>tempAlarmListStorage.getMilitaryTime()){
+						mainAlarmList.add(alarmListCounter, tempAlarmListStorage);
+						break;
+					 }
+					 else if(tempAlarmClock.getMilitaryTime()==tempAlarmListStorage.getMilitaryTime()){//the times are the same
+						 String[] tempArrayDay = tempAlarmClock.getdayAlarmGoesOff().split(" ");
+						 String[] tempArrayCurrent = tempAlarmListStorage.getdayAlarmGoesOff().split(" ");
+						 
+						 //whichever day has the most days active is put after the other one, if the same, put it after as well
+						 if(tempArrayDay.length>tempArrayCurrent.length){//if the array is active for more days than current alarm 
+							 mainAlarmList.add(alarmListCounter,tempAlarmListStorage);
+							 break;
+						 }
+						 else if(mainAlarmList.size()==alarmListCounter+1){//if no more alarms in array list 
+							 mainAlarmList.add(tempAlarmListStorage);
+							 break;
+						 }
+						 //else{//the current array has more days active then the array, add it after
+						//	 alarmList.add(alarmListCounter+1,this);
+						 //}
+						 //break;
+					 }
+					 else if(mainAlarmList.size()==alarmListCounter+1){//if no more alarms in array list
+						 mainAlarmList.add(tempAlarmListStorage);
+						 break;
+					 }
+					 alarmListCounter++;//increment to know the index of the current alarm in the array list
+				}
+			}
+			for(AlarmClock tempPrint: mainAlarmList){//testing purposes
+				System.out.println(Integer.toString(tempPrint.getMilitaryTime()) + " " +tempPrint.getAlarmName());
+			}			
+			
+			//for(Iterator<AlarmClock> alarmsAdded = alarmListStorage.iterator();alarmsAdded.hasNext();){
+				//AlarmClock alarmsToBeDeleted=alarmsAdded.next();
+			//	alarmsAdded.remove();
+			//}
+			//System.out.println("\n");
+		}
+		
+		for(Iterator<AlarmClock> it=alarmListStorage.iterator();it.hasNext();){
+			AlarmClock tempThing = it.next();
+			it.remove();
+		}
+		//int temp =alarmListStorage.size();
+		//for (int i = 0; i < temp; i++)
+	    //    alarmListStorage.remove(i);
+	}*/
+	/**
+	 * This is the storing algorithm that stores the clocks in order of earliest to latest.
+	 * If an alarm has the same time, the alarm with the least days will be shown first
+	 */
+	/*public void sortAlarm(){
 		
 		//if the size is 0, then add the alarm clock
 		if(alarmList.size()==0){
@@ -60,9 +133,9 @@ public class AlarmClock {
 						 alarmList.add(this);
 						 break;
 					 }
-					 /*else{//the current array has more days active then the array, add it after
-						 alarmList.add(alarmListCounter+1,this);
-					 }*/
+					 //else{//the current array has more days active then the array, add it after
+					//	 alarmList.add(alarmListCounter+1,this);
+					 //}
 					 //break;
 				 }
 				 else if(alarmList.size()==alarmListCounter+1){//if no more alarms in array list
@@ -77,7 +150,7 @@ public class AlarmClock {
 		}
 		System.out.println("\n");
 		
-	}
+	}*/
 	
 	//It is often said that 12 a.m. Monday is midnight on Monday morning and 12 p.m. is midday. 
 	/**
@@ -155,6 +228,18 @@ public class AlarmClock {
 	 */
 	public void setActiveOrNot(Boolean tempActive){
 		alarmActive=tempActive;
+	}
+	
+	public void setToDeleteAlarm(){
+		deleteAlarm=true;
+	}
+	
+	public boolean getDeleteAlarm(){
+		return deleteAlarm;
+	}
+	
+	public String getURL(){
+		return urlAlarm;
 	}
 
 }

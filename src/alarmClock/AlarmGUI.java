@@ -14,7 +14,7 @@ public class AlarmGUI extends JFrame{
 	
 	//stores the list of alarms
 	private ArrayList<AlarmClock> alarmList;// = new ArrayList<AlarmClock>();
-		
+	private ArrayList<AlarmClock> mainAlarmList;	
 	//private HistoryGUI historyGui;
 	private JPanel mainPanel = new JPanel();
 	
@@ -22,6 +22,8 @@ public class AlarmGUI extends JFrame{
 	private JPanel northPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 	private JLabel nameLabel = new JLabel("Enter the alarm name:");
 	private JTextField alarmName = new JTextField("Alarm");
+	private JLabel urlLabel = new JLabel("Enter the URL: ");
+	private JTextField urlName = new JTextField("https://www.youtube.com/watch?v=6GUm5g8SG4o");
 	
 	//create center JPanel with combo box
 	private String[] hour = {"1","2","3","4","5","6","7","8","9","10","11","12"};
@@ -54,28 +56,14 @@ public class AlarmGUI extends JFrame{
 	private JButton submitButton = new JButton("Submit");
 	private JButton historyButton = new JButton("Review Alarms");
 	
-	/*private Border borderContents = BorderFactory.createEmptyBorder(10,10,10,10);
-	private Border borderRegion = BorderFactory.createLineBorder(Color.RED,1);
-	private Color colorContents = Color.WHITE;
-	private Font fontLabels = new Font(Font.DIALOG,Font.BOLD,16);
-	*/
+	
 	//constructor
-	public AlarmGUI(ArrayList<AlarmClock> tempAlarmList, Boolean tooManyAlarms, Boolean tooSmallName){
+	public AlarmGUI(ArrayList<AlarmClock> tempAlarmList, Boolean tooManyAlarms, Boolean tooSmallName, ArrayList<AlarmClock> tempMainAlarmList){
 		super("Alarm Clock");//put text on the top of the gui
 		alarmList = tempAlarmList;
+		mainAlarmList=tempMainAlarmList;
 		frame(tooManyAlarms, tooSmallName);//start the gui
 	}
-
-	/**
-	 * Set the historyGui object to the one created by main so the two gui's
-	 * will be synchronized
-	 * @param tempHistGui-the HistoryGUI created by main
-	 */
-	/*public void setHistoryGui(HistoryGUI tempHistGui){
-		historyGui=tempHistGui;
-	}*/
-
-	
 	
 	
 	/**
@@ -91,12 +79,13 @@ public class AlarmGUI extends JFrame{
 		
 		//set up the north panel
 		//northPanel.setBorder(borderRegion);
-		northPanel.setPreferredSize(new Dimension(400,30));//350,30
+		northPanel.setPreferredSize(new Dimension(400,60));//450,30
 		northPanel.add(nameLabel);
 		northPanel.add(alarmName);
-		alarmName.setColumns(19);//set length of text field 
+		alarmName.setColumns(19);//set length of text field
+		northPanel.add(urlLabel);
+		northPanel.add(urlName);
 		mainPanel.add(northPanel, BorderLayout.NORTH);
-		
 		
 		//middle frame/select the time
 		middlePanel.setPreferredSize(new Dimension(250,275));
@@ -162,18 +151,18 @@ public class AlarmGUI extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				
 				//get the time the alarm will go off into a string, 15 is the max number of alarms
-				if(alarmList.size()==15){
+				if(alarmList.size()+mainAlarmList.size()>=15){
 					setVisible(false);
-					new AlarmGUI(alarmList,true,false);
+					new AlarmGUI(alarmList,true,false,mainAlarmList);
 				}
 				else if(alarmName.getText().length()<4){//name cannot be less than 4
 					setVisible(false);
-					new AlarmGUI(alarmList,false,true);
+					new AlarmGUI(alarmList,false,true,mainAlarmList);
 				}
 				else{
-					new AlarmClock(alarmName.getText(),readCheckBox(),readComboBox(),alarmList);
+					new AlarmClock(alarmName.getText(),readCheckBox(),readComboBox(), getURL(),alarmList,mainAlarmList);
 					setVisible(false);
-					new AlarmGUI(alarmList, false,false);
+					new AlarmGUI(alarmList, false,false,mainAlarmList);
 				}
 				
 				//get the value's from the combo boxes into a string
@@ -193,7 +182,7 @@ public class AlarmGUI extends JFrame{
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				new HistoryGUI(alarmList);
+				new HistoryGUI(alarmList, mainAlarmList);
 				setVisible(false);
 				//historyGui.callHistoryGui();
 			}
@@ -482,6 +471,12 @@ public class AlarmGUI extends JFrame{
 		
 	}
 	
+	/**
+	 * 
+	 */
+	public String getURL(){
+		return urlName.getText();
+	}
 	
 	/**
 	 * This function gets the values from the combo boxes and combines them into one string.
@@ -553,6 +548,7 @@ public class AlarmGUI extends JFrame{
 			return false;
 		}
 	}
+	
 	/**
 	 * This clears all the check boxes. This is used when all of the checkboxes are selected, it 
 	 * sets the everyday check box.
