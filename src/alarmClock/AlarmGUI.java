@@ -8,14 +8,13 @@ import java.util.ArrayList;
 import javax.swing.border.*;
 
 
-//how to set the background to a certain color
-//look at the border issue
+
 public class AlarmGUI extends JFrame{
 	
 	//stores the list of alarms
-	private ArrayList<AlarmClock> alarmList;// = new ArrayList<AlarmClock>();
+	private ArrayList<AlarmClock> alarmList;
 	private ArrayList<AlarmClock> mainAlarmList;	
-	//private HistoryGUI historyGui;
+	
 	private JPanel mainPanel = new JPanel();
 	
 	//set up the north JPanel/name box
@@ -73,13 +72,11 @@ public class AlarmGUI extends JFrame{
 		
 		//add the main panel
 		mainPanel.setLayout(new BorderLayout());
-		//mainFrame.setBorder(borderContents);
-		//mainFrame.setBackground(colorContents);
 		setContentPane(mainPanel);
 		
 		//set up the north panel
 		//northPanel.setBorder(borderRegion);
-		northPanel.setPreferredSize(new Dimension(400,60));//450,30
+		northPanel.setPreferredSize(new Dimension(400,60));
 		northPanel.add(nameLabel);
 		northPanel.add(alarmName);
 		alarmName.setColumns(19);//set length of text field
@@ -120,11 +117,14 @@ public class AlarmGUI extends JFrame{
 		southPanel.add(historyButton);
 		mainPanel.add(southPanel, BorderLayout.SOUTH);
 		
+		//if there are already 15 alarms and the user tries to add another alarm
 		if(tooManyAlarms){
 			JLabel tooManyAlarmsLabel = new JLabel("Error. Limit of 15 alarms has been reached.");
 			tooManyAlarmsLabel.setForeground(Color.RED);
 			middlePanel.add(tooManyAlarmsLabel);
 		}
+		
+		//if the name of the alarm is less than 3 characters 
 		if(tooSmallName){
 			JLabel tooSmallNameLabel = new JLabel("Error. Name must be at least 3 characters.");
 			tooSmallNameLabel.setForeground(Color.RED);
@@ -141,8 +141,7 @@ public class AlarmGUI extends JFrame{
 		*************************************************************************************/
 		
 		/**
-		 * This action listener deals with the "Submit" button. When submit is pushed, the alarm will be stored
-		 * and go off when the selected time is reached.
+		 * This action listener deals with the "Submit" button. When submit is pushed, the alarm will be stored.
 		 * 15 is the max number of alarms to be stored at once
 		 */
 		submitButton.addActionListener(new ActionListener() {
@@ -150,33 +149,28 @@ public class AlarmGUI extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				//get the time the alarm will go off into a string, 15 is the max number of alarms
+				//15 is the max number of alarms, if more this is the gui that will pop up
 				if(alarmList.size()+mainAlarmList.size()>=15){
 					setVisible(false);
 					new AlarmGUI(alarmList,true,false,mainAlarmList);
 				}
-				else if(alarmName.getText().length()<4){//name cannot be less than 4
+				else if(alarmName.getText().length()<4){//name cannot be less than 4 characters
 					setVisible(false);
 					new AlarmGUI(alarmList,false,true,mainAlarmList);
 				}
-				else{
+				else{//everything is correct, add this alarm to the alarm list
 					new AlarmClock(alarmName.getText(),readCheckBox(),readComboBox(), getURL(),alarmList,mainAlarmList);
 					setVisible(false);
 					new AlarmGUI(alarmList, false,false,mainAlarmList);
 				}
 				
-				//get the value's from the combo boxes into a string
-				
-				//AlarmInformation tempAlarm=new AlarmInformation(tempHour, tempTenth, tempMinute, tempAMorPM);
-				//tempAlarm.PrintAlarmInfo(label);
-				//labelCheckBox.setText(readCheckBox());
 			}
 		});
 		
 		
 		/**
-		 * This action listener deals with the "Review Alarm" button. When this button is pushed, a screen
-		 * will pop up showing the current alarms set.
+		 * This action listener deals with the "Review Alarm" button. When this button is pushed, a  new screen
+		 * will pop up showing the current alarms. It creates a "HistoryGUI"
 		 */
 		historyButton.addActionListener(new ActionListener() {
 			
@@ -234,7 +228,7 @@ public class AlarmGUI extends JFrame{
 				if(!isComboBoxClicked(1)){//if sunday is the only combo box clicked, leave it clicked
 					sunday.setSelected(true);
 				}
-				if(allCheckBoxesClicked()){
+				if(allCheckBoxesClicked()){//set "everyday" checkbox if every checkbox is selected
 					clearCheckBoxesSetEveryday();
 				}
 			}
@@ -410,7 +404,7 @@ public class AlarmGUI extends JFrame{
 	
 	
 	/**
-	 * This function sees if any of the check box's are selected other than a certain check box.
+	 * This function sees if any of the check box's are selected other than a certain check box. (Atleast two Checkboxes)
 	 * @return true if one check box is selected other than the selected check box. Otherwise false is returned 
 	 * (More than one check box selected) 
 	 * whichDay- The check box that was just selected.
@@ -472,7 +466,7 @@ public class AlarmGUI extends JFrame{
 	}
 	
 	/**
-	 * 
+	 * This function returns the URL in the text field.
 	 */
 	public String getURL(){
 		return urlName.getText();
@@ -493,7 +487,7 @@ public class AlarmGUI extends JFrame{
 	
 	/**
 	 * This function combines the value from the check box's into one string.
-	 * @return The combined combo box values into a single string.
+	 * @return The days the alarm will be in use in a string.
 	 *
 	 * This function see's if the check box is selected. If it is selected it adds
 	 * the abbreviation to the string, else nothing will be added to the string.
@@ -536,8 +530,9 @@ public class AlarmGUI extends JFrame{
 	}
 
 	/**
-	 * 
-	 * @return
+	 * This method sees if all of the days in the check boxes are selected. 
+	 * @return - true if all 7 check boxes are selected
+	 * 		   - false if not every check box is selected
 	 */
 	public boolean allCheckBoxesClicked(){
 		if(sunday.isSelected()&&monday.isSelected()&&tuesday.isSelected()&&wednesday.isSelected()&&
@@ -550,7 +545,7 @@ public class AlarmGUI extends JFrame{
 	}
 	
 	/**
-	 * This clears all the check boxes. This is used when all of the checkboxes are selected, it 
+	 * This clears all the check boxes and sets the "everyday" check box. This is used when all of the check boxes are selected, it 
 	 * sets the everyday check box.
 	 */
 	public void clearCheckBoxesSetEveryday(){

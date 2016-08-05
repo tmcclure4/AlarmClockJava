@@ -26,6 +26,7 @@ public class AlarmGoingOffGUI extends JFrame{
 		
 	}
 	
+	//set up the GUI
 	public void setUpGUI(String alarmInfoLabel, String alarmURL) throws IOException, URISyntaxException{
 		alarmInfo = new JLabel(alarmInfoLabel);
 		
@@ -43,6 +44,8 @@ public class AlarmGoingOffGUI extends JFrame{
 		pack();
 		setVisible(true);
 		Desktop d = Desktop.getDesktop();
+		
+		//make sure the URL is valid. If the URL isn't valid, a pre-determined URL will take its palce
 		try{
 			d.browse(new URI(alarmURL));
 		}
@@ -53,13 +56,11 @@ public class AlarmGoingOffGUI extends JFrame{
 //		d.browse(new URI("https://www.youtube.com/watch?v=6GUm5g8SG4o"));
 
 		
-		
+		//set the visibility to false
 		finishButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
-				
 				setVisible(false);				
 			}
 		});
